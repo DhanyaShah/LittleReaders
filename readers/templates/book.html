@@ -1,0 +1,257 @@
+{% load static %}
+{% load custom_tags %}
+
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<body>
+    <body style="background-color:#6193aa">
+
+<style>
+    * {
+        box-sizing: border-box;
+        padding: 0;
+        margin: 0;
+        align-items: center;
+    }
+    
+    .row {
+      display: flex;
+    }
+    
+    .column {
+      flex: 50%;
+      padding: 0px;
+    }
+    
+    .imgbutton{
+        cursor: pointer;
+        transition: 0.3s ease-out;
+    }
+    
+    button{
+        padding: 5px;
+        width: 5vw;
+        color: white;
+        border: 2px solid white;
+        background-color: transparent;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: 0.3s ease-out;
+    }
+    
+    button:hover{
+        transform: scale(1.1);
+    }
+    
+    .prevbutton{
+        position: absolute;
+        top: 93vh;
+        left: 47vw;
+    }
+    
+    .nextbutton{
+        position: absolute;
+        top: 93vh;
+        left: 53vw;
+    }
+    
+    .mutebutton{
+        position: absolute;
+        top: 92vh;
+        left: 90vw;
+    }
+
+    .homebutton{
+        position: absolute;
+        top: 93vh;
+        left: 5vw;
+    }
+    
+    .container{
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+    
+    .pages {
+        position: relative;
+        display: flex;
+        box-sizing: border-box;
+    }
+    
+    .page {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        transition: all 0.7s;
+    }
+
+</style>
+
+    {% for audio in Book.audiofiles %}
+    {% if audio != "0" %}
+    <audio id= "{{ audio }}" src= "/static/{{ audio }}" preload= "auto">
+    Your browser does not support the audio element.</audio>
+    {% endif %}
+    {% endfor %}
+
+    <div class="container">
+        <div class="pages" style= "width: {{ Book.length|mul:100 }}%">
+            {% for i in Book.length|list %}
+            <div class="page">
+                <div class="row">
+                    <div class="column">
+                        <div class= "imgbutton" onclick = "slide('prev', '{{ Book.length }}')">
+                            <img src= "/static/{{ Book.images|elem1:i }}" style="width:100%; float:left" preload = "auto">
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class = "imgbutton" onclick = "slide('next', '{{ Book.length }}')">
+                            <img src= "/static/{{ Book.images|elem2:i }}" style="width:100%; float:left" preload = "auto">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="prevbutton"> 
+            <button onclick = "slide('prev', '{{ Book.length }}')">Previous</button>
+        </div>
+        <div class="nextbutton">
+            <button onclick = "slide('next', '{{ Book.length }}')">Next</button> 
+        </div>
+        <div class="mutebutton">
+            <button onclick = "clickMute(this, '{{ Book.length }}')">Audio Off</button>
+        </div>
+        <div class="homebutton">
+            <button onclick = "clickHome()"><i class ="fa fa-home"></i> Home</button>
+        </div>
+    </div>
+
+    <script>
+
+        var audio_data = JSON.parse('{{ json_data|safe }}');
+        const pages = document.querySelectorAll(".page");
+        const translateAmount = 100;
+        let translate = 0;
+        let mute = false;
+
+        function clickHome(){
+            window.location.href = 'http://127.0.0.1:8000/home/';
+        }
+    
+        function clickMute(button, length){
+            mute = !mute;
+            if (mute){
+                pauseAudio(length);
+                button.innerText = "Audio On";
+            }
+            else{
+                playAudio(length);
+                button.innerText = "Audio Off";
+            }
+        }
+    
+        slide = (direction, length) => {
+    
+            if (direction === "next" && translate !== ((length-1) * -100)){
+                translate -= translateAmount;}
+            else if (direction === "prev" && translate !== 0){
+                translate += translateAmount;}
+            
+            pages.forEach(
+            pages => (pages.style.transform = `translateX(${translate}%)`)
+            );
+            playAudio(length);
+        }
+    
+        function playAudio(length){
+            if (translate === 0 || translate == ((length-1) * -100)){
+                pauseAudio(length);
+            }
+            else if (!mute){
+                pauseAudio(length)
+                let index = 2*(translate/-100)
+                if (audio_data[index+1] !== '0' && audio_data[index+2] !== '0'){
+                    document.getElementById(audio_data[index+1]).currentTime = 0;
+                    document.getElementById(audio_data[index+1]).play();
+                    document.getElementById(audio_data[index+1]).addEventListener("ended", function(){
+                        document.getElementById(audio_data[index+2]).play();});
+                    document.getElementById(audio_data[index+2]).addEventListener("ended", function(){
+                        document.getElementById(audio_data[index+2]).currentTime = 0;
+                        translate = (index/2)*-100;
+                        slide('next', length);});
+                }
+                else if (audio_data[index+1] != '0'){
+                    document.getElementById(audio_data[index+1]).currentTime = 0;
+                    document.getElementById(audio_data[index+1]).play();
+                    document.getElementById(audio_data[index+1]).addEventListener("ended", function(){
+                        document.getElementById(audio_data[index+1]).currentTime = 0;
+                        translate = (index/2)*-100;
+                        slide('next', length);});
+                }
+                else if (audio_data[index+2] != '0'){
+                    document.getElementById(audio_data[index+2]).currentTime = 0;
+                    document.getElementById(audio_data[index+2]).play();
+                    document.getElementById(audio_data[index+2]).addEventListener("ended", function(){
+                        document.getElementById(audio_data[index+2]).currentTime = 0;
+                        translate = (index/2)*-100;
+                        slide('next', length);});
+                }
+            }
+        }
+    
+        function pauseAudio(length){
+            let prev_index = 2*((translate+100)/-100)
+            let curr_index = 2*((translate)/-100)
+            let next_index = 2*((translate-100)/-100)
+
+            if (translate == 0){
+                if (audio_data[next_index+1] != '0'){
+                    document.getElementById(audio_data[next_index+1]).pause();
+                }
+                if (audio_data[next_index+2] != '0'){
+                    document.getElementById(audio_data[next_index+2]).pause();
+                }
+            }
+            else if (translate == ((length-1) * -100)){
+                if (audio_data[prev_index+1] != '0'){
+                    document.getElementById(audio_data[prev_index+1]).pause();
+                }
+                if (audio_data[prev_index+2] != '0'){
+                    document.getElementById(audio_data[prev_index+2]).pause();
+                }
+            }
+            else {
+                if (audio_data[prev_index+1] != '0'){
+                    document.getElementById(audio_data[prev_index+1]).pause();
+                }
+                if (audio_data[prev_index+2] != '0'){
+                    document.getElementById(audio_data[prev_index+2]).pause();
+                }
+                if (audio_data[curr_index+1] != '0'){
+                    document.getElementById(audio_data[curr_index+1]).pause();
+                }
+                if (audio_data[curr_index+2] != '0'){
+                    document.getElementById(audio_data[curr_index+2]).pause();
+                }
+                if (audio_data[next_index+1] != '0'){
+                    document.getElementById(audio_data[next_index+1]).pause();
+                }
+                if (audio_data[next_index+2] != '0'){
+                    document.getElementById(audio_data[next_index+2]).pause();
+                }
+            }
+        }
+    
+    </script>
+    
+    </body>
+    
+    </html>
+

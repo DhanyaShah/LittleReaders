@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<body>
+<body style="background-color:#89CFF0">
+
+<style>
+
+.center{
+    position: absolute;
+    top: 50%;
+    transform: translate(0, -50%);
+}
+
+button{
+        border: none;
+        cursor: pointer;
+        appearance: none;
+        background-color: inherit;
+        transition: transform .7s ease-in-out;
+        margin-left:10px;
+    }
+    button:hover{
+        background-color: #49758d;
+        /* transform: scale(1.05); */
+    }
+
+.scrolling-wrapper-flexbox {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+
+  .card {
+    flex: 0 0 auto;
+    margin-right: 2vw;
+    }
+}
+
+.card{
+    width: 20vw;
+    height: 50vh;
+}
+
+.scrolling-wrapper, .scrolling-wrapper-flexbox {
+  height: 50vh;
+  margin-top: 0px;
+  margin-bottom: 0;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
+  &::-webkit-scrollbar {
+        display: none;
+  }
+}
+
+</style>
+
+{% for book in Books %}
+
+<audio id= "{{ book.id }}" src = "/static/{{ book.audiofiles.0 }}" preload= "auto">
+    Your browser does not support the audio element.</audio>
+
+{% endfor %}
+
+<div class="center">
+    <div class = "scrolling-wrapper-flexbox">
+        {% for book in Books %}
+        <div class="card">
+            <button type="button" onclick= "clickBook('{{ book.id }}')">
+                 <img src="/static/{{ book.images.0 }}" style="width:100%">
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function clickBook(id){
+        $(':button').prop('disabled', true); 
+        document.getElementById(id).play();
+        document.getElementById(id).addEventListener("ended", function(){
+            window.location= "book/" + id;
+            $(':button').prop('disabled', false);
+        });
+    }
+</script>
+
+</body>
+</html>  
