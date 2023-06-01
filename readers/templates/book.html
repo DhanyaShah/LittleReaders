@@ -47,34 +47,33 @@
         transform: scale(1.1);
     }
 
-    .horizontalspace{
-        margin-left: 65px;
-    }
-    
-    .prevbutton{
+    .button-container{
+        display: flex;
         position: absolute;
-        top: 93vh;
-        margin-left: 47vw;
+        left: 46vw;
+        gap: 10px;
     }
-    
-    .nextbutton{
-        position: absolute;
-        top: 93vh;
-        margin-left: 47vw;
+
+    .verticalspace{
+        margin-top: 20px;
     }
     
     .mutebutton{
         position: absolute;
-        top: 92vh;
-        left: 90vw;
+        left: 89vw;
     }
 
     .homebutton{
         position: absolute;
-        top: 93vh;
         left: 5vw;
     }
-    
+
+    .center{
+        position: absolute;
+        top: 50%;
+        transform: translate(0, -50%); 
+    }
+
     .container{
         width: 100%;
         height: 100%;
@@ -90,7 +89,7 @@
     .page {
         position: relative;
         width: 100%;
-        height: 100vh;
+        height: 100%;
         display: flex;
         transition: all 0.7s;
     }
@@ -104,38 +103,38 @@
     {% endif %}
     {% endfor %}
 
-    <div class="container">
-        <div class="pages" style= "width: {{ Book.length|mul:100 }}%">
-            {% for i in Book.length|list %}
-            <div class="page">
-                <div class="row">
-                    <div class="column">
-                        <div class= "imgbutton" onclick = "slide('prev', '{{ Book.length }}')">
-                            <img src= "/static/{{ Book.images|elem1:i }}" style="width:100%; float:left" preload = "auto">
+    <div class="center">
+        <div class="container">
+            <div class="pages" style= "width: {{ Book.length|mul:100 }}%">
+                {% for i in Book.length|list %}
+                <div class="page">
+                    <div class="row">
+                        <div class="column">
+                            <div class= "imgbutton" onclick = "slide('prev', '{{ Book.length }}')">
+                                <img src= "/static/{{ Book.images|elem1:i }}" style="width:100%; float:left" preload = "auto">
+                            </div>
                         </div>
-                    </div>
-                    <div class="column">
-                        <div class = "imgbutton" onclick = "slide('next', '{{ Book.length }}')">
-                            <img src= "/static/{{ Book.images|elem2:i }}" style="width:100%; float:left" preload = "auto">
+                        <div class="column">
+                            <div class = "imgbutton" onclick = "slide('next', '{{ Book.length }}')">
+                                <img src= "/static/{{ Book.images|elem2:i }}" style="width:100%; float:left" preload = "auto">
+                            </div>
                         </div>
                     </div>
                 </div>
+                {% endfor %}
             </div>
-            {% endfor %}
-        </div>
-        <div class="prevbutton"> 
-            <button onclick = "slide('prev', '{{ Book.length }}')">Previous</button>
-        </div>
-        <div class= "horizontalspace">
-            <div class="nextbutton">
-                <button onclick = "slide('next', '{{ Book.length }}')">Next</button> 
+            <div class = "verticalspace">
+                <div class= "button-container"> 
+                        <button onclick = "slide('prev', '{{ Book.length }}')">Previous</button>
+                        <button onclick = "slide('next', '{{ Book.length }}')">Next</button> 
+                </div>
+                <div class="mutebutton">
+                    <button onclick = "clickMute(this, '{{ Book.length }}')">Audio Off</button>
+                </div>
+                <div class="homebutton">
+                    <button onclick = "clickHome()"><i class ="fa fa-home"></i> Home</button>
+                </div>
             </div>
-        </div>
-        <div class="mutebutton">
-            <button onclick = "clickMute(this, '{{ Book.length }}')">Audio Off</button>
-        </div>
-        <div class="homebutton">
-            <button onclick = "clickHome()"><i class ="fa fa-home"></i> Home</button>
         </div>
     </div>
 
