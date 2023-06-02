@@ -22,16 +22,26 @@ button{
         cursor: pointer;
         appearance: none;
         background-color: inherit;
-        transition: transform .7s ease-in-out;
-        margin-left:10px;
+        border-radius: 10px;
+        margin-left: 15px;
+        background-color: #49758d;
+        box-shadow: -5px 8px 4px #999;
     }
     button:hover{
         /* transform: scale(1.05); */
-        background-color: #49758d; 
+        background-color: white;
         /* transform: scale(1.05); */
     }
     button:active{
-        background-color: #314f5e; 
+        background-color: white; 
+        box-shadow: -4px 5px 4px #555;
+        transform: translateY(4px);
+    }
+
+    button.disabled{
+        background-color: #49758d;
+        box-shadow: -5px 8px 4px #999;
+        transform: none;
     }
 
 .scrolling-wrapper-flexbox {
@@ -82,14 +92,25 @@ button{
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     function clickBook(id){
-        $(':button').prop('disabled', true); 
+        
+        var buttons = document.getElementsByTagName('button');
+        
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].disabled = true;
+            buttons[i].classList.add('disabled');
+        }
         document.getElementById(id).play();
         document.getElementById(id).addEventListener("ended", function(){
             window.location= "book/" + id;
-            $(':button').prop('disabled', false);
+
+            setTimeout(function() {
+                for (var i = 0; i < buttons.length; i++) {
+                    buttons[i].disabled = false;
+                    buttons[i].classList.remove('disabled');
+                }
+            }, 2000);
         });
     }
 </script>
