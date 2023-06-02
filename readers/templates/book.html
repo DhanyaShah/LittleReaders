@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://kit.fontawesome.com/f500de8188.js" crossorigin="anonymous"></script>
 
 <body>
     <body style="background-color:#6193aa">
@@ -126,8 +127,8 @@
 
     {% for audio in Book.audiofiles %}
     {% if audio != "0" %}
-    <audio id= "{{ audio }}" src= "/static/{{ audio }}" preload= "auto">
-    Your browser does not support the audio element.</audio>
+        <audio id= "{{ audio }}" src= "/static/{{ audio }}" preload= "auto">
+        Your browser does not support the audio element.</audio>
     {% endif %}
     {% endfor %}
 
@@ -160,7 +161,7 @@
                         <button class = "nextbutton" onclick = "slide('next', '{{ Book.length }}')">Next <i class="fa fa-arrow-right"></i></button> 
                 </div>
                 <div class="mutebutton">
-                    <button onclick = "clickMute(this, '{{ Book.length }}')">Audio Off</button>
+                    <button id= "mute" onclick = "clickMute(this, '{{ Book.length }}')">Audio Off <i class="fas fa-volume-mute"></i></button>
                 </div>
                 <div class="homebutton">
                     <button onclick = "clickHome()"><i class ="fa fa-home"></i> Home</button>
@@ -189,11 +190,11 @@
             mute = !mute;
             if (mute){
                 pauseAudio(length);
-                button.innerText = "Audio On";
+                button.innerHTML = 'Audio On <i class="fas fa-volume-up"></i>';
             }
             else{
                 playAudio(length);
-                button.innerText = "Audio Off";
+                button.innerHTML = 'Audio Off <i class="fas fa-volume-mute"></i>';
             }
         }
     

@@ -9,8 +9,10 @@ import json
 def home_page(request):
     template = loader.get_template('home.html')
     book_objs = Books.objects.order_by('id').all()
+    total_objs = book_objs.count()
     context = {
-    'Books': book_objs,}
+    'Books': book_objs,
+    'Midpoint': total_objs/2,}
     return HttpResponse(template.render(context, request))
 
 def book_page(request, book_id):
